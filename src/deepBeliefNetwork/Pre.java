@@ -1,6 +1,7 @@
 package deepBeliefNetwork;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 
@@ -38,7 +39,7 @@ public class Pre {
 		return rbmList;
 	}
 	
-	/*private static void test(double[][] test, List<MyRBM> rbmList){
+	private static void test(double[][] test, List<MyRBM> rbmList){
 		int DBNlayer = rbmList.size();
 		int length = test[0].length;
 		double[][] reconstructLayer = new double[test.length][length];
@@ -69,7 +70,27 @@ public class Pre {
 			} 
 		}
 		System.out.println(Arrays.deepToString(reconstructLayer));
-	}*/
+	}
+	
+	public static void main(String[] args) {
+		double[][] train = {
+							{ 1, 0, 0, 1, 1},
+							{ 1, 1, 1, 1, 0},
+							{ 0, 0, 0, 0, 1}	
+						   };
+		int[] hidLayer = {4,3};
+		List<MyRBM> list = Pre.train(train, hidLayer, 1000, 1, 0.1);
+		for(MyRBM rbm:list) {
+			System.out.println("W\n"+Arrays.deepToString(rbm.W));
+			System.out.println("visB\n"+Arrays.toString(rbm.visBias));
+			System.out.println("hidB\n"+Arrays.toString(rbm.hidBias));
+		}
+		
+		double[][] test = { 
+							{ 1, 0, 0, 1, 1}
+						  };
+		Pre.test(test, list);
+	}
 	
 	
 }

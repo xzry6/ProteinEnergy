@@ -189,7 +189,7 @@ public class MyRBM {
 		//RBM.test_rbm();
 	}
 	
-	/*public static void main(String Args[]){
+	public static void main(String Args[]){
 		testrbm();
-	}*/
+	}
 }

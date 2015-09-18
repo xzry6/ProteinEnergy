@@ -1,0 +1,13 @@
+######
+aa.aa=bb
+cc.aa=cc
+preTrain_learningRate=0.1
+dropOut_standard=0.6
+hidden_layers=4,3
+label_number=2
+######
+asc.aba=sd
+--------
+1	0	0	1	1
+1	1	1	1	0
+0	0	0	0	1

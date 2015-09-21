@@ -1,3 +1,8 @@
 /dbn/
+<<<<<<< HEAD
 /config/
 /deepBeliefNetwork/
+=======
+/deepBeliefNetwork/
+/dataStructure/
+>>>>>>> refs/heads/dev

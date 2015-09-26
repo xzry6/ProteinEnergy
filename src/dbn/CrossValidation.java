@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import dbn.util.Util;
+
 public class CrossValidation {
 	
 	private double[][] data;
@@ -32,6 +34,10 @@ public class CrossValidation {
 	 * @param fold 
 	 */
 	public CrossValidation split(int fold) {
+		if(fold>data.length) {
+			Util.printError("too many cross-validation folds");
+			return null;
+		}
 		int piece = size/fold;
 		int piecetemp = piece;
 		for(int i=0; i<fold; ++i) {

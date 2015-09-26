@@ -1,16 +1,21 @@
 package dbn;
 
+import java.util.List;
 import java.util.Random;
 
+import dbn.util.ConfigUtil;
+import dbn.util.Util;
+
 public class RestrictedBoltzmannMachine {
-	
+
 	private Random r = new Random(Long.parseLong(ConfigUtil.getInstance().getMap().get("preTrain_randomSeed")));
 	private double learningRate = Double.parseDouble(ConfigUtil.getInstance().getMap().get("preTrain_learningRate"));
+	private final double finetuneRate = Double.parseDouble(ConfigUtil.getInstance().getMap().get("fineTune_learningRate"));
 	private int k = Integer.parseInt(ConfigUtil.getInstance().getMap().get("CD_k"));
-	private double pro = Double.parseDouble(ConfigUtil.getInstance().getMap().get("dropOut_standard"));
-	private double a = Double.parseDouble(ConfigUtil.getInstance().getMap().get("dropOut_alpha"));
-	private double b = Double.parseDouble(ConfigUtil.getInstance().getMap().get("dropOut_beta"));
 
+	private String pro = ConfigUtil.getInstance().getMap().get("dropOut_standard");
+	private String a = ConfigUtil.getInstance().getMap().get("dropOut_alpha");
+	private String b = ConfigUtil.getInstance().getMap().get("dropOut_beta");
 	
 	private int num;
 	private int visNum;
@@ -19,6 +24,7 @@ public class RestrictedBoltzmannMachine {
 	private double[] visBias;
 	private double[] hidBias;
 
+	
 	public RestrictedBoltzmannMachine(double[][] train, int hidNum){
 		if(train==null) {
 			Util.printError("training set is null");
@@ -33,6 +39,14 @@ public class RestrictedBoltzmannMachine {
 		this.visBias = new double[visNum];
 		this.hidBias = new double[hidNum];
 	}	
+	
+	public RestrictedBoltzmannMachine(List<double[]> tempW, double[] B) {
+		this.W = tempW.toArray(new double[tempW.size()][]);
+		this.hidBias = B;
+		this.hidNum = B.length;
+		this.visNum = W.length;
+		this.visBias = new double[visNum];
+	}
 	
 
 	public void getRBM(RestrictedBoltzmannMachine rbm){
@@ -52,11 +66,7 @@ public class RestrictedBoltzmannMachine {
 	
 	
 	public void contrasiveDivergence(double[] sV0){
-		double[] pH0 = sigmoidHgivenV(sV0,1,0);
-		if(pro!=0)
-			dropOut(pH0, simpleRate(pro), true);
-		else if(a!=0)
-			dropOut(pH0, sigmoidHgivenV(sV0,a,b), true);
+		double[] pH0 = dropOutTrain(sV0);
 		double[] pHn = new double[hidNum];
 		double[] pVn = new double[visNum];
 		double[] sHn = new double[hidNum];
@@ -69,7 +79,7 @@ public class RestrictedBoltzmannMachine {
 			sHn = sample(pHn);
 			pVn = sigmoidVgivenH(sHn);
 			sVn = sample(pVn);
-			pHn = sigmoidHgivenV(sVn,1,0);
+			pHn = sigmoidHgivenV(sVn);
 		}
 		for(int i=0; i<visNum; ++i)
 			for(int j=0; j<hidNum; ++j)	W[i][j] += (pH0[j]*sV0[i]-pHn[j]*sVn[i])/num*learningRate;
@@ -79,7 +89,13 @@ public class RestrictedBoltzmannMachine {
 			hidBias[j] += (pH0[j]-pHn[j])/num*learningRate;
 	}
 	
-	
+	public void update(double[] error, double[] instance, int num) {
+		for(int j=0; j<hidBias.length; ++j) {
+			for(int i=0; i<W.length; ++i)
+				W[i][j] += finetuneRate*error[j]*instance[i]/num;
+			hidBias[j] += finetuneRate*error[j]/num;
+		}
+	}
 	
 	public double[] generateNextLayer(double[] currentLayer) {
 		return sample(sigmoidHgivenV(currentLayer));
@@ -161,21 +177,7 @@ public class RestrictedBoltzmannMachine {
 	}
 	
 	
-	
-	private void dropOut(double[] prob, double[] dropRate, boolean flag){
-		if(flag){
-			double[] sample = sample(dropRate);
-			for(int i=0; i<prob.length; ++i)
-				if(sample[i]==0) prob[i] = 0;
-		} else{
-			for(int i=0; i<prob.length; ++i)
-				prob[i] *= dropRate[i];
-		}
-	}
-	
-	
-	
-	private double[] sample(double[] prob){
+	private double[] sample(double[] prob) {
 		double sample[] = new double[prob.length];
 		for(int i=0; i<prob.length; ++i)
 			if(r.nextDouble()<prob[i]) sample[i] = 1;
@@ -183,18 +185,38 @@ public class RestrictedBoltzmannMachine {
 	}
 	
 	
-	
-	private double[] simpleRate(double rate){
-		double[] dropRate = new double[hidNum];
-		for(int i=0; i<dropRate.length; ++i)
-			dropRate[i] = rate;
-		return dropRate;
+	private double sample(double prob) {
+		if(r.nextDouble()<prob) return 1;
+		return 0;
 	}
 	
-	public static void main(String[] args) {
-		ConfigUtil.getInstance().getConfig("config.txt");
-		RestrictedBoltzmannMachine rbm = new RestrictedBoltzmannMachine(null,1);
-		System.out.println(rbm.learningRate);
-		System.out.println(ConfigUtil.getInstance().getMap().get("preTrain_randomSeed"));
+	
+	double[] dropOutTrain(double[] instance){
+		double[] temp = sigmoidHgivenV(instance);
+		if(!pro.equals("NaN")) {
+			for(int i=0; i<temp.length; ++i)
+				if(sample(Double.parseDouble(pro))==0) temp[i] = 0;
+		} else if(!a.equals("NaN")&&!b.equals("NaN")) {
+			double[] dropRate = sigmoidHgivenV(instance,Double.parseDouble(a),Double.parseDouble(b));
+			dropRate = sample(dropRate);
+			for(int i=0; i<temp.length; ++i)
+				if(dropRate[i]==0) temp[i] = 0;
+		}
+		return temp;
+	}
+	
+	
+	double[] dropOutTest(double[] instance) {
+		double[] temp = sigmoidHgivenV(instance);
+		
+		if(!pro.equals("NaN")) 
+			for(int i=0; i<temp.length; ++i)
+				temp[i] *= Double.parseDouble(pro);
+		else if(!a.equals("NaN")&&!b.equals("NaN")) {
+			double[] dropRate = sigmoidHgivenV(instance,Double.parseDouble(a),Double.parseDouble(b));
+			for(int i=0; i<temp.length; ++i)
+				temp[i] *= dropRate[i];
+		}
+		return temp;
 	}
 }

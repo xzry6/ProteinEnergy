@@ -107,7 +107,7 @@ public class FineTune {
 
 				List<double[]> sigList = new ArrayList<double[]>();
 				double[] sigLayer = new double[train[n].length];
-				double[] tempLayer  = new double[train[n].length];
+				double[] tempLayer = new double[train[n].length];
 				System.arraycopy(train[n], 0, tempLayer, 0, train[n].length);
 				sigList.add(tempLayer);
 				
@@ -216,5 +216,36 @@ public class FineTune {
 			}
 		}
 		return mylabel;
+	}
+	
+	
+	public static void main(String[] args) {
+		long startTime=System.currentTimeMillis(); 
+		double[][] train = {
+							{ 1, 0, 0, 1},
+							{ 1, 1, 1, 1},
+							{ 0, 0, 0, 0}	
+						   };
+		double[] label = {1,0,1};
+
+		double[][] test = { 
+							{ 1, 0, 0, 1}
+						  };
+		double[] prelabel = {1};
+		int[] hidLayer = {4,3};
+		List<MyRBM> list = Pre.train(train, hidLayer, 1000, 1, 0.1);
+		FineTune ft = new FineTune();
+		ft.fineTune(train, label, list, 1000, 1.5);
+//		System.out.println(Arrays.toString(ft.test(test, prelabel, list)));
+		System.out.println(Arrays.deepToString(ft.topW));
+		System.out.println(Arrays.toString(ft.topB));
+		System.out.println(System.currentTimeMillis()-startTime+"ms");
+//		for(MyRBM rbm:list) {
+//			System.out.println("W\n"+Arrays.deepToString(rbm.W));
+//			System.out.println("visB\n"+Arrays.toString(rbm.visBias));
+//			System.out.println("hidB\n"+Arrays.toString(rbm.hidBias));
+//		}
+		
+//		Pre.test(test, list);
 	}
 }

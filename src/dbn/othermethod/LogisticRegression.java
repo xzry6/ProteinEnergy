@@ -1,4 +1,6 @@
-package dbn;
+package dbn.othermethod;
+
+import dbn.util.Util;
 
 public class LogisticRegression {
 	

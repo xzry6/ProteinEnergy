@@ -10,27 +10,19 @@ public class ClassifierFactory {
 	
 	public static Classifier build(int trainlength, int labellength, int num) {
 		Classifier c;
-		switch(classifier) {
-		case "softmaxRegression":
+		if(classifier.equals("softmaxRegression"))
 			c = new SoftmaxRegression(trainlength,labellength,num);
-			break;
-		default:
+		else
 			c = new LogisticRegression(trainlength,labellength,num);
-			break;
-		}
 		return c;
 	}
 	
 	public static Classifier read(List<double[]> W, double[] B) {
 		Classifier c;
-		switch(classifier) {
-		case "softmaxRegression":
+		if(classifier.equals("softmaxRegression"))
 			c = new SoftmaxRegression(W,B);
-			break;
-		default:
+		else
 			c = new LogisticRegression(W,B);
-			break;
-		}
 		return c;
 	}
 }

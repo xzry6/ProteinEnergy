@@ -1,7 +1,6 @@
 package dbn;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,18 +91,5 @@ public class CrossValidation {
 		map.put("testdata",datalist.get(number));
 		map.put("testlabel",labellist.get(number));
 		return map;
-	}
-	
-	
-	public static void main(String[] args) {
-		double[][] data = {{1,1},{2,2},{3,3},{4,4},{5,5}};
-		double[][] label = {{-1},{-2},{-3},{-4},{-5}};
-		
-		CrossValidation cv = new CrossValidation(data,label).split(3);
-		Map<String,double[][]> map = cv.build(0);
-		System.out.println(Arrays.deepToString(map.get("traindata")));
-		System.out.println(Arrays.deepToString(map.get("trainlabel")));
-		System.out.println(Arrays.deepToString(map.get("testdata")));
-		System.out.println(Arrays.deepToString(map.get("testlabel")));
 	}
 }

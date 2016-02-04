@@ -1,6 +1,7 @@
 package dbn.util;
 
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 
 public class Util {
@@ -23,6 +24,7 @@ public class Util {
 		int[] intArray = new int[string.length];
 		for(int i=0; i<string.length; ++i)
 			intArray[i] = Integer.parseInt(string[i]);
+		//System.out.println(Arrays.toString(intArray));
 		return intArray;
 	}
 

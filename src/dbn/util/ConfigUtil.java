@@ -20,7 +20,6 @@ public class ConfigUtil {
 			put("CD_k","1");
 			put("epoch","1000");
 			put("hidden_layers","60,20,12");
-			put("CV_fold","10");
 			put("dropOut_standard","0.5");
 			put("dropOut_alpha","0");
 			put("dropOut_beta","0");
@@ -76,7 +75,8 @@ public class ConfigUtil {
 				String[] keymap = tempString.split("=");
 				if(keymap.length==2) getInstance().getMap().put(keymap[0], keymap[1]);
 			}
-			if(testName==null) {
+			String mode = getInstance().getMap().get("mode");
+			if(mode.equals("train")||mode.contains("CV_")) {
 				while((tempString = reader.readLine()) != null)
 					list.add(Util.strA2douA(tempString.split("\t")));
 			} else {
@@ -84,16 +84,18 @@ public class ConfigUtil {
 				while((tempString = reader.readLine()) != null) {
 					if(tempString.length()==0
 							||tempString.charAt(0)=='#'
-							||Character.isAlphabetic(tempString.charAt(0)))
+							||Character.isLetter(tempString.charAt(0))
+							||tempString.charAt(0)=='~')
 						continue;
-					if(tempString.charAt(0)=='~') break;
-				}
-				while((tempString = reader.readLine()) != null) {
-					if(tempString.charAt(0)=='~') break;
 					list.add(Util.strA2douA(tempString.split("\t")));
+//					if(tempString.charAt(0)=='~') break;
 				}
+//				while((tempString = reader.readLine()) != null) {
+//					if(tempString.charAt(0)=='~') break;
+//					list.add(Util.strA2douA(tempString.split("\t")));
+//				}
 			}
-			parseData(list,testName==null);
+			parseData(list,!getInstance().getMap().get("mode").equals("predict"));
 			reader.close();
 		} catch (Exception e) {
 			Util.printError("unable to read configuration file");

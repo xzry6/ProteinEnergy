@@ -1,5 +1,6 @@
 package dbn;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executors;
@@ -24,35 +25,57 @@ public class DBNManager {
 		String testName = null;
 		if(args.length>1) 
 			testName = args[1];
+		//String fileName = "config.txt";
+		//testName = "DBN_test";
 		
-		ConfigUtil.getInstance().getConfig(fileName,testName);
-		map = ConfigUtil.getInstance().getMap();
-		mode = map.get("mode");
-		data = ConfigUtil.getInstance().getData();
-		label = ConfigUtil.getInstance().getLabel();
-		WriteUtil.getInstance().getMode(mode).writeMap(map);
-		
-		if(mode.contains("CV_")) CVmanager(fileName);
-		else if(mode.equals("test")) 
-			new DeepBeliefNetwork().readModel(fileName)
-								   .predict(data);
-		else new DeepBeliefNetwork().train(data,label)
-									.writeModel();;
+		while(true) {
+			ConfigUtil.getInstance().getConfig(fileName,testName);
+			map = ConfigUtil.getInstance().getMap();
+			mode = map.get("mode");
+			data = ConfigUtil.getInstance().getData();
+			label = ConfigUtil.getInstance().getLabel();
+			WriteUtil.getInstance().getMode(mode).writeMap(map,testName);
+			
+//			System.out.println(Arrays.deepToString(data));
+//			System.out.println(data.length);
+//			System.out.println(Arrays.deepToString(label));
+//			new DeepBeliefNetwork().readModel(fileName).test(data, label);
+//			WriteUtil.getInstance().writeTable().close();
+			if(mode.contains("CV_")) 
+				CVmanager(fileName);
+			else if(mode.equals("predict")) 
+				new DeepBeliefNetwork().readModel(fileName)
+									   .predict(data);
+			else if(mode.equals("test")) {
+				new DeepBeliefNetwork().readModel(fileName)
+									   .test(data,label);
+				WriteUtil.getInstance().writeTable().close();
+			}
+			else if(mode.equals("train")){
+				new DeepBeliefNetwork().train(data,label)
+									   .writeModel();
+				if(testName!=null) {
+					fileName = "DBN_model";
+					continue;
+				}
+			}
+			else Util.printError("unknown mode");
+			break;
+		}
 	}
 	
 	public static void CVmanager(String fileName) {
 		String[] sa = mode.split("_");
 		CVfold = Integer.parseInt(sa[sa.length-1]);
 		LinkedBlockingQueue<Map<String,double[][]>> queue = new LinkedBlockingQueue<Map<String,double[][]>>(CVfold);
-		ScheduledExecutorService executor = Executors.newScheduledThreadPool(3);
+		ScheduledExecutorService executor = Executors.newScheduledThreadPool(5);
 		try {
 			CrossValidation cv = new CrossValidation(data,label).split(CVfold);
 			WriteUtil.getInstance().writeCVheader(label);
 			for(int i=0; i<CVfold; ++i)
 				queue.put(cv.build(i));
-			executor.execute(new CV2DBNadaptor(queue,"dbn 1"));
-			executor.execute(new CV2DBNadaptor(queue,"dbn 2"));
-			executor.execute(new CV2DBNadaptor(queue,"dbn 3"));
+			for(int i=0; i<CVfold; ++i)
+				executor.execute(new CV2DBNadaptor(queue,"dbn "+i));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

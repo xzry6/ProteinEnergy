@@ -16,7 +16,7 @@ public class Input {
             reader = new InputStreamReader(new FileInputStream(file));
             int tempchar;
             int count = 0;
-        	String temp = new String();
+            String temp = new String();
             data = new double[length][140];
             	while ((tempchar = reader.read()) != -1) {
             	if(tempchar!=(int)' '&&tempchar!=(int)'\r'&&tempchar!=(int)'\n'){
@@ -39,13 +39,13 @@ public class Input {
             lreader = new InputStreamReader(new FileInputStream(lfile));
             int tempchar;
             int count = 0;
-        	String temp = new String();
+        		String temp = new String();
             labelC = new double[length];
             labelR = new double[length];
             	while ((tempchar = lreader.read()) != -1) {
             	if(tempchar!=(int)'\r'&&tempchar!=(int)'\n'){
             		temp += (char) tempchar;
-            	} else if(tempchar==(int)'\r'){
+            	} else if(tempchar==(int)'\n'){
             		labelR[count] = Double.parseDouble(temp);
             		temp = new String();
             		if(labelR[count]>=0){

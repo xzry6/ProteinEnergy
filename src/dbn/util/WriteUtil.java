@@ -37,6 +37,8 @@ public class WriteUtil {
 		try {
 			if(mode.contains("CV_"))
 				out = new BufferedWriter(new FileWriter("DBN_CV_result"));
+			else if(mode.equals("predict"))
+				out = new BufferedWriter(new FileWriter("DBN_predict_result"));
 			else if(mode.equals("test"))
 				out = new BufferedWriter(new FileWriter("DBN_test_result"));
 			else out = new BufferedWriter(new FileWriter("DBN_model"));
@@ -56,16 +58,20 @@ public class WriteUtil {
 	}
 	
 	
-	public WriteUtil writeMap(Map<String,String> map) {
+	public WriteUtil writeMap(Map<String,String> map, String TestName) {
 		try {
 			out.write("#####PARAMETERS#####\n");
-			map.put("mode","test");
-			if(Double.parseDouble(map.get("dropOut_standard"))!=0
+			if(mode.equals("train")) {
+				if(TestName==null)
+					map.put("mode","predict");
+				else map.put("mode", "test");
+			}
+				if(Double.parseDouble(map.get("dropOut_standard"))!=0
 					||(Double.parseDouble(map.get("dropOut_alpha"))==0
 					&&Double.parseDouble(map.get("dropOut_beta"))==0)) {
-				map.put("dropOut_alpha","NaN");
-				map.put("dropOut_beta","NaN");
-			} 
+					map.put("dropOut_alpha","NaN");
+					map.put("dropOut_beta","NaN");
+				} 
 			Iterator<String> i = map.keySet().iterator();
 			while(i.hasNext()) {
 				String key = i.next();

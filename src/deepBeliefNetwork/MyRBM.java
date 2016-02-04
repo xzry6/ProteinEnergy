@@ -10,7 +10,7 @@ public class MyRBM {
 	double[][] W;
 	double[] visBias;
 	double[] hidBias;
-	Random r = new Random(325325);
+	Random r = new Random(32553532);
 	
 	double randomGaussian(double mu, double sigma){
 		double temp = 0;

@@ -190,10 +190,10 @@ public class RestrictedBoltzmannMachine {
 		return 0;
 	}
 	
-	
+
 	double[] dropOutTrain(double[] instance){
 		double[] temp = sigmoidHgivenV(instance);
-		if(!pro.equals("NaN")) {
+		if(!pro.equals("NaN")&&Double.parseDouble(pro)!=0) {
 			for(int i=0; i<temp.length; ++i)
 				if(sample(Double.parseDouble(pro))==0) temp[i] = 0;
 		} else if(!a.equals("NaN")&&!b.equals("NaN")) {
@@ -209,7 +209,7 @@ public class RestrictedBoltzmannMachine {
 	double[] dropOutTest(double[] instance) {
 		double[] temp = sigmoidHgivenV(instance);
 		
-		if(!pro.equals("NaN")) 
+		if(!pro.equals("NaN")&&Double.parseDouble(pro)!=0) 
 			for(int i=0; i<temp.length; ++i)
 				temp[i] *= Double.parseDouble(pro);
 		else if(!a.equals("NaN")&&!b.equals("NaN")) {

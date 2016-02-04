@@ -158,84 +158,99 @@ public class Cross {
 		
 		
 		
-		FineTune f_t = new FineTune();
-		List<MyRBM> rbm = Pre.train(data, hidLayer, epoche, k, learningRate);
-		f_t.fineTune(data, label, rbm, epoche, finetuneRate);
-		
-
-		InputArizona.read();
-    	InputArizona.compare();
-    	InputArizona.encode();
-		double[] l = new double[InputArizona.encode.length];
-		
-		double[] mylabel = f_t.test(InputArizona.encode, l, rbm);
-		System.out.println(Arrays.toString(mylabel));
-				/*TP = 0;
-				TN = 0;
-				FP = 0;
-				FN = 0;
-				for(int n=0; n<mylabel.length; ++n){
-					if(mylabel[n]==1){
-						if(mylabel[n]==label[n]){
-							TP++;
-						} else{
-							FP++;
-						}
-					} else{
-						if(mylabel[n]==label[n]){
-							TN++;
-						} else{
-							FN++;
-						}
-					}
-				}
-				System.out.println("True Positive is: "+TP);
-				System.out.println("False Positive is: "+FP);
-				System.out.println("False Negative is: "+FN);
-				System.out.println("True Negative is: "+TN);
-				System.out.println("Accuracy is: "+(double)(TP+TN)/(FP+FN+TP+TN));*/
-		try{
-			String s = new String();
-			s = "modelW.txt";
-			FileWriter file = new FileWriter(s);
-			FileWriter fileb = new FileWriter("modelB.txt");
-			BufferedWriter out = new BufferedWriter(file);
-			BufferedWriter outb = new BufferedWriter(fileb);
-			for(int j=0; j<rbm.size(); ++j){
-				for(int x=0; x<rbm.get(j).hidNum; ++x){
-					for(int y=0; y<rbm.get(j).visNum; ++y){
-						out.write(Double.toString(rbm.get(j).W[y][x]));
-						out.write((int)' ');
-					}
-					outb.write(Double.toString(rbm.get(j).hidBias[x]));
-					outb.write((int)' ');
-					out.write((int)'\r');
-					out.write((int)'\n');
-				}
-				outb.write((int)'\r');
-				outb.write((int)'\n');
-				out.write((int)'/');
-				out.write((int)'\r');
-				out.write((int)'\n');
-			}
-			for(int j=0; j<f_t.topW.length; ++j) {
-				out.write(Double.toString(f_t.topW[j][0]));
-				out.write((int)' ');
-			}
-			out.write((int)'\r');
-			out.write((int)'\n');
-			out.write((int)'/');
-			outb.write(Double.toString(f_t.topB[0]));
-			outb.write((int)' ');
-			outb.write((int)'\r');
-			outb.write((int)'\n');
-			out.close();
-			outb.close();
-		} catch(Exception e){
-			e.printStackTrace();
-		}
+//		FineTune f_t = new FineTune();
+//		List<MyRBM> rbm = Pre.train(data, hidLayer, epoche, k, learningRate);
+//		f_t.fineTune(data, label, rbm, epoche, finetuneRate);
+//		
+//
+//		InputArizona.read();
+//    	InputArizona.compare();
+//    	InputArizona.encode();
+//		double[] l = new double[InputArizona.encode.length];
+//		
+//		double[] mylabel = f_t.test(InputArizona.encode, l, rbm);
+//		System.out.println(Arrays.toString(mylabel));
+//				/*TP = 0;
+//				TN = 0;
+//				FP = 0;
+//				FN = 0;
+//				for(int n=0; n<mylabel.length; ++n){
+//					if(mylabel[n]==1){
+//						if(mylabel[n]==label[n]){
+//							TP++;
+//						} else{
+//							FP++;
+//						}
+//					} else{
+//						if(mylabel[n]==label[n]){
+//							TN++;
+//						} else{
+//							FN++;
+//						}
+//					}
+//				}
+//				System.out.println("True Positive is: "+TP);
+//				System.out.println("False Positive is: "+FP);
+//				System.out.println("False Negative is: "+FN);
+//				System.out.println("True Negative is: "+TN);
+//				System.out.println("Accuracy is: "+(double)(TP+TN)/(FP+FN+TP+TN));*/
+//		try{
+//			String s = new String();
+//			s = "modelW.txt";
+//			FileWriter file = new FileWriter(s);
+//			FileWriter fileb = new FileWriter("modelB.txt");
+//			BufferedWriter out = new BufferedWriter(file);
+//			BufferedWriter outb = new BufferedWriter(fileb);
+//			for(int j=0; j<rbm.size(); ++j){
+//				for(int x=0; x<rbm.get(j).hidNum; ++x){
+//					for(int y=0; y<rbm.get(j).visNum; ++y){
+//						out.write(Double.toString(rbm.get(j).W[y][x]));
+//						out.write((int)' ');
+//					}
+//					outb.write(Double.toString(rbm.get(j).hidBias[x]));
+//					outb.write((int)' ');
+//					out.write((int)'\r');
+//					out.write((int)'\n');
+//				}
+//				outb.write((int)'\r');
+//				outb.write((int)'\n');
+//				out.write((int)'/');
+//				out.write((int)'\r');
+//				out.write((int)'\n');
+//			}
+//			for(int j=0; j<f_t.topW.length; ++j) {
+//				out.write(Double.toString(f_t.topW[j][0]));
+//				out.write((int)' ');
+//			}
+//			out.write((int)'\r');
+//			out.write((int)'\n');
+//			out.write((int)'/');
+//			outb.write(Double.toString(f_t.topB[0]));
+//			outb.write((int)' ');
+//			outb.write((int)'\r');
+//			outb.write((int)'\n');
+//			out.close();
+//			outb.close();
+//		} catch(Exception e){
+//			e.printStackTrace();
+//		}
 		
 		//InputArizona.reload();
 		//InputArizona.test();
+	}
+	
+	public static void main(String[] args) {
+		int[] index = new int[388];
+		Random r = new Random(32553532);
+		boolean[] bool = new boolean[388];
+		int temp = 0;
+		for(int n=0; n<388; ++n){
+			do{
+				temp = r.nextInt(388);
+			} while(bool[temp]);
+			bool[temp] = true;
+			index[n] = temp;
+		}
+		System.out.println(Arrays.toString(index));
 	}
 }
